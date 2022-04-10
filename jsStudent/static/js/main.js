@@ -6,7 +6,6 @@
   var tempId = null;
   var contentItemLists = document.querySelectorAll('.content-item')
   var navLists = document.querySelectorAll('.nav-item')
-  var addBtn = document.querySelector('#addBtn');
 
   var init = function () {
     /* 数据的获取 */
@@ -29,45 +28,11 @@
     navLists.forEach(function (node, index) {
       node.addEventListener('click', oNavNodeItemClick.bind(node, index))
     })
-    addBtn.addEventListener('click', onAddBtnClick)
   }
 
-  /* 添加学生事件 */
-  var onAddBtnClick = function (){
-    console.log(userName.value)
-    ajax({
-      url: "https://api.duyiedu.com/api/student/addStudent",
-      type: "GET",
-      params: {
-        appkey: "Q_A_Q_1590927055348",
-        sNo: userSNo.value,
-        name: userName.value,
-        sex: userSex.value,
-        birth: userBirth.value,
-        phone: userPhone.value,
-        address: userAddress.value,
-        email: userEmail.value,
-      },
-      success: function (res) {
-        res = JSON.parse(res)
-        window.alert(res.msg)
-        /* 重新进行数据的渲染 */
-        if(res.msg == '添加成功'){
-          initLists()
-          // add.className = 'nav-item'
-          // student.className = 'nav-item active'
-          // contentone.className = 'content-item active'
-          // contenttwo.className = 'content-item'
-          location.reload();
-        }
-      },
-    })
-  }
   /* 导航栏的点击事件 */
   var oNavNodeItemClick = function (index) {
-    console.log(index)
     contentItemLists.forEach(function (node, contentIndex) {
-      console.log(contentIndex)
       node.className = contentIndex === index ? 'content-item active' : 'content-item';
       navLists[contentIndex].className = 'nav-item'
     })
@@ -175,7 +140,6 @@
       },
       success: function (res) {
         res = JSON.parse(res)
-        // console.log(res)
         totalAmount = res.data.cont
         /* 渲染表格 */
         renderTableList(res.data.findByPage)
@@ -227,7 +191,6 @@
         ' <td> <span uId="' + item.sNo + '" class="edit" index="0">编辑</span> <span uId="' + item.sNo + '" class="del" index="0">删除</span> </td>' +
         '</tr>'
       )
-      //让学号成为唯一标识
       obj[item.sNo] = item
     })
     tableContainer.innerHTML = tempArr.join('')
