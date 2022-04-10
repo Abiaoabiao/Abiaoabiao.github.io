@@ -1,0 +1,199 @@
+<div class="header-content">
+    <!-- logo 区域 -->
+    <div class="logo">
+        <img src="http://misc.360buyimg.com/mtd/pc/index_2019/1.0.0/assets/sprite/header/sprite.png" alt=""
+            class="target" />
+        <img src="http://img1.360buyimg.com/da/jfs/t1/14716/32/11447/94000/5c90a83bEaa611013/18490bf08654ba09.gif?v=0.36068380359321317"
+            alt="" class="img-gif animate_end" />
+    </div>
+    <!-- 搜索框区域 -->
+    <div class="search-box">
+        <!-- 搜索框表单 -->
+        <div class="search-form">
+            <input type="text" name="" id="search-inp" placeholder="可乐">
+            <a href="#" class="search-btn iconfont">&#xe66d;</a>
+            <!-- 联想项目 -->
+            <ul class="search-list"></ul>
+        </div>
+
+        <!-- 热门词汇 -->
+        <div class="hotwords"></div>
+
+        <!-- 购物车模块 -->
+        <div class="settleup">
+            <div class="cw-icon">
+                <i class="iconfont">&#xe621;</i>
+                <a target="_blank" href="//cart.jd.com/cart.action">我的购物车</a>
+                <i class="ci-count" id="shopping-amount">0</i>
+            </div>
+        </div>
+
+
+        <!-- 导航栏模块 -->
+        <ul class="navitems">
+            <li><a href="#" class="red">秒杀</a></li>
+            <li><a href="#" class="red">优惠券</a></li>
+            <li><a href="#">PLUS会员</a></li>
+            <li><a href="#">品牌闪购</a></li>
+            <li><a href="#">拍卖</a></li>
+            <li><a href="#">京东家电</a></li>
+            <li><a href="#">京东超市</a></li>
+            <li><a href="#">京东生鲜</a></li>
+            <li><a href="#">京东国际</a></li>
+            <li><a href="#">京东金融</a></li>
+        </ul>
+    </div>
+    <!-- 广告区域 -->
+    <div class="ad">
+        <!-- 直接从京东官网将此部分结构拿过来即可 -->
+        <a id="J_promo_lk" class="promo_lk"
+            href="//pro.jd.com/mall/active/2S7ULD94H4vvkQc8qhZxBi4sHXw1/index.html?babelChannel=ttt4" target="_blank"
+            clstag="h|keycount|head|adbtn_01" aria-label="推广位"
+            style="background-image: url(&quot;//img30.360buyimg.com/babel/jfs/t1/182371/6/7822/28758/60bd8cb0Ec02474e4/7c65702ebe4c260c.png.webp&quot;); background-size: cover;">
+        </a>
+    </div>
+</div>
+
+<script>
+    // ${} 是 ES6 推出的新语法，叫做字符串模板，在里面可以解析变量
+    // var name = "xiejie";
+    // console.log("Hello " + name);
+    // console.log(`Hello ${name}`); // Hello xiejie
+
+    (function () {
+        // 获取热门关键词业务逻辑
+        $.ajax({
+            url: '/hotwords',
+            dataType: 'json',
+            success: function (res) {
+                var str = res.result.map(function (item) {
+                    return `<a href="${item.href}">${item.word}</a>`
+                }).join('');
+                $('.hotwords').html(str)
+            }
+        })
+
+        // 获取第一个随机的推荐关键词
+        var recommendTimer = null;
+        function randomWord() {
+            recommendTimer = setInterval(function () {
+                $.ajax({
+                    url: '/recommendWords',
+                    dataType: 'json',
+                    success: function (res) {
+                        $('.hotwords')
+                            .find('a')
+                            .eq(0)
+                            .text(res.word)
+                            .attr('href', res.href)
+                    }
+                })
+            }, 2000)
+        }
+        randomWord();
+
+        // 鼠标移入移出第一个热门推荐词的时候
+        $('.hotwords').on('mouseenter', 'a:first-of-type', function () {
+            clearInterval(recommendTimer);
+        }).on('mouseleave', 'a:first-of-type', function () {
+            randomWord();
+        })
+
+        // 给输入框绑定 input 事件，发送 ajax 请求
+        var timer = null;
+        $('#search-inp').on('input', function () {
+            // 获取用户输入的内容
+            var val = $(this).val();
+
+            // 接下来，我们就需要发送 ajax 请求来获取用户输入内容对应的服务器搜索结果
+            // 但是，这里有个问题，input 事件会在用户每输入一个字符都会触发
+            // 所以，我们需要做一个函数防抖
+
+            if (val) {
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                    $.ajax({
+                        url: 'https://suggest.taobao.com/sug',
+                        data: {
+                            code: 'utf-8',
+                            q: val,
+                            callback: 'searchCb',
+                        },
+                        dataType: 'jsonp'
+                    })
+                }, 500);
+            }
+        })
+
+        window.searchCb = function (res) {
+            var str = res.result.reduce(function (prev, item) {
+                return (
+                    prev + `
+                        <li>
+                            <span class="product-name">${item[0]}</span>
+                            <span class="product-number">约${parseInt(item[1])}个商品</span>
+                        </li>
+                    `
+                )
+            }, "");
+            if (res.result.length === 0) {
+                str = "<li>未搜索到相关信息</li>"
+            }
+            $('.search-list').html(str).show();
+        }
+
+        // 鼠标移出搜索以及联想框的时候，需要隐藏搜索联想
+        var listHideTimer = null;
+        $('.search-form').mouseleave(function () {
+            clearTimeout(listHideTimer);
+            listHideTimer = setTimeout(function () {
+                $('.search-list').hide();
+            }, 1000)
+        }).mouseenter(function () {
+            if (listHideTimer) {
+                // 如果进入此 if，说明现在还没有到 1 s，但是马上要到 1s
+                // 可能要执行 hide 操作了
+                clearTimeout(listHideTimer)
+            }
+        })
+
+
+        // 当鼠标移入到 logo 的时候，需要播放动画
+        // 其实就是切换图片
+        var gifFadeOutTimer = null;
+        $('.logo').mouseenter(function () {
+            clearInterval(gifFadeOutTimer);
+            if ($('.img-gif').hasClass('animate_end')) {
+                // 如果有这个类，说明动画是播放完毕了或者没有播放
+                // 这个时候我们要做的事情就是播放
+                $(this).find('.img-gif')
+                    .fadeIn()
+                    .addClass('animate_start')
+                    .removeClass('animate_end')
+                    .attr(
+                        'src',
+                        'http://img1.360buyimg.com/da/jfs/t1/14716/32/11447/94000/5c90a83bEaa611013/18490bf08654ba09.gif'
+                    )
+
+                setTimeout(function () {
+                    $('.img-gif').addClass('animate_end').removeClass('animate_start')
+                }, 4000)
+            }
+
+        }).mouseleave(function () {
+
+            if ($('.img-gif').hasClass('animate_end')) {
+                // 说明动画播放完毕
+                $('.img-gif').fadeOut();
+            } else {
+                clearInterval(gifFadeOutTimer);
+                gifFadeOutTimer = setInterval(function () {
+                    if ($('.img-gif').hasClass('animate_end')) {
+                        // 说明动画播放完毕
+                        $('.img-gif').fadeOut();
+                    }
+                }, 1000)
+            }
+        })
+    })()
+</script>

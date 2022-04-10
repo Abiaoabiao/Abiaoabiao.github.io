@@ -1,0 +1,68 @@
+<!-- 秒杀模块 -->
+<div class="clearfix">
+    <!-- 京东秒杀倒计时 -->
+    <div class="seckill-count">
+        <a class="seckill-countdown" href="//miaosha.jd.com" target="_blank" clstag="h|keycount|core|seckill_a">
+            <div class="countdown-title">京东秒杀</div>
+            <div>
+                <div class="countdown-desc"><strong>22:00</strong>点场 倒计时</div><span class="timmer countdown-main"><span
+                        class="timmer__unit timmer__unit--hour">00</span><span
+                        class="timmer__unit timmer__unit--minute">31</span><span
+                        class="timmer__unit timmer__unit--second">16</span></span>
+            </div>
+        </a>
+    </div>
+    <!-- 两个轮播图 -->
+    <div class="seckill-content">
+        <div class="seckill-list"></div>
+        <div class="seckill-brand"></div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // 设置结束时间
+        var endTime = new Date('2021-08-27 22:00');
+        var seckillTimer = setInterval(function(){
+            // 需要先获取到当前的时间
+            var nowTime = new Date();
+            // 得到当前时间到结束时间的毫秒差
+            var disTime = endTime.getTime() - nowTime.getTime();
+            // 接下来就需要不停的更新时间
+            if(disTime < 0){
+                // 说明现在已经过了结束时间了
+                clearInterval(seckillTimer)
+            } else {
+                // 说明还没有过结束时间
+                // 那么我们需要把时分秒计算出来
+                var hour = parseInt(disTime / 1000 / 60 / 60);
+                var minutes = parseInt(disTime / 1000 / 60 % 60);
+                var seconds = parseInt(disTime / 1000 % 60);
+                $('.timmer__unit--hour').text(hour < 10 ? '0' + hour : hour);
+                $('.timmer__unit--minute').text(minutes < 10 ? '0' + minutes : minutes);
+                $('.timmer__unit--second').text(seconds < 10 ? '0' + seconds : seconds);
+            }
+        },1000)
+    })()
+
+    $('.seckill-list').load('../components/seckillList.html',function(){
+        $(this).swiper({
+            contentList : $('.seckill-list-item'),
+            width : 800,
+            height : 260,
+            type : 'animate'
+        })
+    })
+
+    $('.seckill-brand').load('../components/seckillBrand.html',function(){
+        $(this).swiper({
+            contentList : $('.brand-item'),
+            width : 180,
+            height : 240,
+            type : 'animate',
+            isAuto : true,
+            showChangeBtn : 'hide'
+        })
+    })
+
+</script>
