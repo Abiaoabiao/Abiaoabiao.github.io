@@ -20,16 +20,17 @@
       url: 'https://api.duyiedu.com/api/student/stuLogin', // 商店的地址
       type: "POST",   // 怎么去到这个商店，骑车，坐车
       params: {     // 我要给售货员钱
-        appkey: 'alan_1627900246598',
+        appkey: 'liubai_1628151540258',
         account: userName.value,
         password: userPassword.value,
       },
       success: function (res) {    // 他给我商品
+        // console.log(res)
         res = JSON.parse(res)   // 拿到这双鞋，打开包装
-
+        console.log(res)
         window.alert(res.msg)
         if (res.status === 'success') {
-          window.location.href = '../main/main.html?name=' + userName.value
+          window.location.href = '../main/index.html?name=' + userName.value
         }
       }
     })

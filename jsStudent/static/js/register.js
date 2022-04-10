@@ -28,7 +28,7 @@
       url: 'https://api.duyiedu.com/api/student/stuRegister', // 跟后端通信的地址，找到后端
       type: 'POST', // 后端告诉我写的
       params: {    // 给后端的内容
-        appkey: 'alan_1627900246598',
+        appkey: 'Q_A_Q_1590927055348',
         account: userAccount.value,
         username: userName.value,
         password: userPassword.value,
