@@ -10,7 +10,3 @@ https://developer.duyiedu.com/
 
 https://www.fancynode.com.cn/pxcook
 
-**首页面数据请求appkey：**
-
-Q_A_Q_1590927055348
-
