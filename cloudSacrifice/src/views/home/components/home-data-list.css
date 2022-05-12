@@ -1,0 +1,19 @@
+.list {
+  padding: 10px 5px;
+  background-color: #fff;
+}
+.list ul {
+  padding: 0 10px;
+}
+.list a {
+  font-size: 14px;
+  overflow: hidden;
+  float: left;
+  color: #609b8e;
+  height: 28px;
+}
+.list span {
+  font-size: 12px;
+  float: right;
+  color: #ff7200;
+}
